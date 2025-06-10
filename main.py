@@ -17,7 +17,7 @@ from transformer_models import train_and_evaluate_model, create_comprehensive_co
 from evaluation import generate_comprehensive_report
 
 def setup_environment():
-    """Initializes random seeds and checks for GPU."""
+    """Set random seeds and check GPU."""
     print("--- Setting up environment ---")
     
     torch.manual_seed(RANDOM_SEED)
@@ -32,7 +32,7 @@ def setup_environment():
     print("Setup complete.\n")
 
 def main():
-    """Main script to run experiments."""
+    """Main script for experiments."""
     parser = argparse.ArgumentParser(description="Toxic Comment Classification Experiments")
     parser.add_argument('--baseline', action='store_true', help='Run baseline models')
     parser.add_argument('--transformers', action='store_true', help='Run transformer models')

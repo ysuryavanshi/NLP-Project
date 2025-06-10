@@ -13,7 +13,7 @@ warnings.filterwarnings('ignore')
 from config import *
 
 def load_all_results():
-    """Load all model result CSVs into a single dict."""
+    """Load all model result CSVs."""
     results = {'baseline': {}, 'transformers': {}}
     
     # Baseline models
@@ -33,7 +33,7 @@ def load_all_results():
     return results
 
 def create_performance_comparison(results, save_plot=True):
-    """Plot a comprehensive comparison of all models."""
+    """Plot a comparison of all models."""
     if not results:
         print("No results to compare.")
         return
@@ -89,7 +89,7 @@ def create_performance_comparison(results, save_plot=True):
     plt.show()
 
 def create_performance_table(results):
-    """Create and save a summary table of model performance."""
+    """Create and save a performance summary table."""
     if not results: return None
     
     table_data = []
@@ -100,7 +100,7 @@ def create_performance_table(results):
                 if isinstance(val, float):
                     row[key.replace('_', ' ').title()] = f"{val:.4f}"
             table_data.append(row)
-            
+
     df = pd.DataFrame(table_data)
     df = df.sort_values('F1 Micro', ascending=False)
     df.to_csv(RESULTS_DIR / 'performance_summary.csv', index=False)
@@ -109,7 +109,7 @@ def create_performance_table(results):
     return df
 
 def create_per_class_analysis(results, save_plot=True):
-    """Create detailed per-class performance analysis"""
+    """Create per-class performance analysis plots."""
     if not results:
         return
     
@@ -170,7 +170,7 @@ def create_per_class_analysis(results, save_plot=True):
     plt.show()
 
 def analyze_class_difficulty(results):
-    """Analyze which classes are hardest to predict"""
+    """Analyze and rank classes by prediction difficulty."""
     if not results:
         return None
     
@@ -213,7 +213,7 @@ def analyze_class_difficulty(results):
     return difficulty_df
 
 def plot_confusion_matrices(y_true, y_pred, model_name):
-    """Plot confusion matrices for each label"""
+    """Plot confusion matrices for each label for a model."""
     fig, axes = plt.subplots(2, 3, figsize=(20, 12))
     fig.suptitle(f'Confusion Matrices for {model_name}', fontsize=16, fontweight='bold')
     
@@ -232,7 +232,7 @@ def plot_confusion_matrices(y_true, y_pred, model_name):
     plt.close()
 
 def generate_detailed_report(results):
-    """Generate a detailed markdown report"""
+    """Generate a detailed markdown report of results."""
     report_content = "<!-- This report is auto-generated. Do not edit directly. -->\n\n"
     report_content += "# Comprehensive Evaluation Report\n\n"
     report_content += "This report summarizes the performance of all models evaluated for the toxic comment classification task.\n\n"
@@ -249,16 +249,28 @@ def generate_detailed_report(results):
     report_content += "## Performance Visualizations\n\n"
     report_content += "The following charts compare the performance of all evaluated models.\n\n"
     report_content += "![Comprehensive Model Comparison](plots/comprehensive_comparison.png)\n\n"
-    report_content += "![Per-Class Performance Analysis](plots/per_class_analysis.png)\n\n"
+    report_content += "### Per-Class F1 Score Analysis\n"
+    report_content += "![Per-Class Analysis](plots/per_class_analysis.png)\n\n"
     
-    return report_content
+    # --- Class Difficulty ---
+    report_content += "## Class Difficulty Analysis\n\n"
+    difficulty_df = analyze_class_difficulty(results)
+    if difficulty_df is not None:
+        report_content += difficulty_df.to_markdown(index=False) + "\n\n"
+    else:
+        report_content += "*No difficulty analysis data found.*\n\n"
+
+    # --- Save Report ---
+    report_file = RESULTS_DIR / 'evaluation_report.md'
+    report_file.write_text(report_content)
+    print(f"Comprehensive report saved to {report_file}")
 
 def generate_comprehensive_report():
-    """Generate all standard evaluation plots and tables."""
-    print("--- Generating Comprehensive Evaluation Report ---")
+    """Generate a full report with all analyses."""
+    print("\n--- Starting Comprehensive Report Generation ---")
     results = load_all_results()
     
-    if not results:
+    if not results['baseline'] and not results['transformers']:
         print("No results found. Exiting.")
         return
         

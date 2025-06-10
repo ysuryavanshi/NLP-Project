@@ -141,7 +141,7 @@ class TransformerTrainer:
     def train(self, train_loader, val_loader, num_epochs, patience, min_delta):
         """Main training loop with early stopping."""
         scheduler = get_linear_schedule_with_warmup(self.optimizer, 
-                                                    num_warmup_steps=self.warmup_steps, 
+                                                    num_warmup_steps=self.warmup_steps,
                                                     num_training_steps=len(train_loader) * num_epochs)
         
         for epoch in range(num_epochs):
@@ -168,7 +168,7 @@ class TransformerTrainer:
         
         if self.best_model_state:
             self.model.load_state_dict(self.best_model_state)
-    
+
     def plot_training_history(self, model_name):
         """Plot training and validation loss and F1 score."""
         fig, ax1 = plt.subplots(figsize=(12, 5))
@@ -249,7 +249,7 @@ def create_comprehensive_comparison(results):
     
     df.to_csv(RESULTS_DIR / 'all_models_comparison.csv', index=False)
     print(f"Comparison table saved to {RESULTS_DIR / 'all_models_comparison.csv'}")
-
+    
     # Plotting
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
     fig.suptitle('Comprehensive Model Comparison', fontsize=16)
@@ -261,7 +261,7 @@ def create_comprehensive_comparison(results):
     # ROC-AUC Scores
     df.plot(x='Model', y='ROC_AUC', kind='bar', ax=axes[1],
             title='ROC-AUC Score', rot=45, color='green')
-
+    
     plt.tight_layout()
     plt.savefig(PLOTS_DIR / 'comprehensive_transformer_comparison.png', dpi=300)
     print("Comprehensive plot saved.")
