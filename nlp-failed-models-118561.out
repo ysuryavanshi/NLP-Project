@@ -1,0 +1,63 @@
+===========================================
+RUNNING FAILED MODELS ONLY
+Job ID: 118561
+Job Name: nlp-failed-models
+Node: gpu03
+Start Time: Thu Jun  5 11:43:40 PDT 2025
+Working Directory: /WAVE/users2/unix/ysuryavanshi/NLP Project
+Models: DeBERTa, HateBERT, ELECTRA
+Fix Applied: PyTorch CVE-2025-32434 vulnerability
+Resource allocation: 4 CPUs, 16384MB memory
+GPU allocation: 0
+Time allocation: 12 hours
+===========================================
+Loading TensorFlow module...
+GPU Information:
+Thu Jun  5 11:43:41 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.86.15              Driver Version: 570.86.15      CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-PCIE-32GB           Off |   00000000:3B:00.0 Off |                    0 |
+| N/A   27C    P0             27W /  250W |       1MiB /  32768MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+Starting FAILED MODELS training with PyTorch vulnerability fixes...
+This will train: DeBERTa, HateBERT, ELECTRA
+Command: python run_failed_models_only.py
+Exit status: 1
+===========================================
+FAILED MODELS TRAINING FINISHED at Thu Jun  5 11:43:42 PDT 2025
+===========================================
+Final GPU status:
+Thu Jun  5 11:43:42 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.86.15              Driver Version: 570.86.15      CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-PCIE-32GB           Off |   00000000:3B:00.0 Off |                    0 |
+| N/A   27C    P0             27W /  250W |       1MiB /  32768MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+

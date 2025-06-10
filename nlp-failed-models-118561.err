@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/WAVE/users2/unix/ysuryavanshi/NLP Project/run_failed_models_only.py", line 24, in <module>
+    from transformer_models import run_transformer_experiments
+  File "/WAVE/users2/unix/ysuryavanshi/NLP Project/transformer_models.py", line 1, in <module>
+    import torch
+  File "/WAVE/users2/unix/ysuryavanshi/.local/lib/python3.9/site-packages/torch/__init__.py", line 75, in <module>
+    from typing_extensions import TypeIs as _TypeIs
+ImportError: cannot import name 'TypeIs' from 'typing_extensions' (/WAVE/apps/el8/conda/envs/TensorFlow/20231212-CUDA/lib/python3.9/site-packages/typing_extensions.py)

@@ -1,0 +1,370 @@
+Job ID: 118530
+Job Name: nlp-complete-30h
+Node: gpu01
+Start Time: Wed Jun  4 22:03:31 PDT 2025
+Working Directory: /WAVE/users2/unix/ysuryavanshi/NLP Project
+Configuration: COMPLETE COMPREHENSIVE ANALYSIS
+Resource allocation: 2 CPUs, 8GB memory total
+Training: ALL 5 MODELS (BERT, RoBERTa, DeBERTa, HateBERT, ELECTRA)
+Settings: 10 epochs each, batch size 128, full 512 token length
+Time allocation: 30 hours (estimated completion: ~23 hours)
+Loading TensorFlow module...
+GPU Information:
+Wed Jun  4 22:03:31 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.86.15              Driver Version: 570.86.15      CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-PCIE-32GB           Off |   00000000:D8:00.0 Off |                    0 |
+| N/A   30C    P0             25W /  250W |       1MiB /  32768MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+Starting COMPREHENSIVE NLP Toxic Comment Classification...
+This will train all baseline and advanced models with full evaluation
+Models: Logistic Regression, Random Forest, BERT, RoBERTa, DeBERTa, HateBERT, ELECTRA
+Command: python main.py --all
+==========================================
+STARTING COMPLETE PIPELINE at Wed Jun  4 22:03:31 PDT 2025
+==========================================
+=== SETTING UP ENVIRONMENT ===
+Using device: cuda
+GPU: Tesla V100-PCIE-32GB
+GPU Memory: 34.1 GB
+Environment setup complete!
+
+=== RUNNING DATA ANALYSIS ===
+Loading data...
+Train data shape: (78189, 8)
+Test data shape: (16755, 8)
+Test labels shape: (153164, 7)
+Preprocessing data...
+Test data already contains labels, using them directly.
+After preprocessing - Train: (78189, 9), Test: (16755, 9)
+Analyzing dataset...
+Dataset analysis plot saved to /WAVE/users2/unix/ysuryavanshi/NLP Project/plots/dataset_analysis.png
+
+=== Dataset Summary ===
+Total training samples: 78,189
+Average comment length: 387.7 characters
+Median comment length: 201.0 characters
+Percentage of toxic comments: 9.58%
+Percentage of clean comments: 89.79%
+
+=== Label Statistics ===
+toxic: 7,494 (9.58%)
+severe_toxic: 780 (1.00%)
+obscene: 4,149 (5.31%)
+threat: 247 (0.32%)
+insult: 3,861 (4.94%)
+identity_hate: 686 (0.88%)
+Data analysis complete!
+
+Running baseline experiments...
+=== RUNNING BASELINE EXPERIMENTS ===
+
+Loading data...
+Train data shape: (78189, 8)
+Test data shape: (16755, 8)
+Test labels shape: (153164, 7)
+Preprocessing data...
+Test data already contains labels, using them directly.
+After preprocessing - Train: (78189, 9), Test: (16755, 9)
+Creating data splits...
+Train split: 62,551 samples
+Validation split: 15,638 samples
+Test split: 16,755 samples
+Creating TF-IDF features for baseline...
+TF-IDF feature shape: (62551, 10000)
+Training Logistic Regression...
+Training Random Forest...
+Evaluating logistic_regression...
+
+=== LOGISTIC_REGRESSION RESULTS ===
+Accuracy: 0.9152
+F1-Score (Micro): 0.6383
+F1-Score (Macro): 0.4565
+ROC-AUC (Micro): 0.9727
+ROC-AUC (Macro): 0.9699
+
+=== Per-Class F1-Scores ===
+toxic: 0.6924
+severe_toxic: 0.2795
+obscene: 0.7080
+threat: 0.2353
+insult: 0.6076
+identity_hate: 0.2162
+Evaluating random_forest...
+
+=== RANDOM_FOREST RESULTS ===
+Accuracy: 0.9110
+F1-Score (Micro): 0.6874
+F1-Score (Macro): 0.4217
+ROC-AUC (Micro): 0.9645
+ROC-AUC (Macro): 0.9392
+
+=== Per-Class F1-Scores ===
+toxic: 0.7310
+severe_toxic: 0.1383
+obscene: 0.7911
+threat: 0.0984
+insult: 0.6501
+identity_hate: 0.1212
+Baseline comparison plot saved to /WAVE/users2/unix/ysuryavanshi/NLP Project/plots/baseline_comparison.png
+Making predictions on test set...
+Predicting with logistic_regression...
+logistic_regression Test F1 (Micro): 0.6477
+logistic_regression Test F1 (Macro): 0.4552
+Predicting with random_forest...
+random_forest Test F1 (Micro): 0.6993
+random_forest Test F1 (Macro): 0.4183
+
+=== BASELINE EXPERIMENTS COMPLETED ===
+Running transformer experiments...
+=== RUNNING TRANSFORMER EXPERIMENTS ===
+
+Loading data...
+Train data shape: (78189, 8)
+Test data shape: (16755, 8)
+Test labels shape: (153164, 7)
+Preprocessing data...
+Test data already contains labels, using them directly.
+After preprocessing - Train: (78189, 9), Test: (16755, 9)
+Creating data splits...
+Train split: 62,551 samples
+Validation split: 15,638 samples
+Test split: 16,755 samples
+Training 5 models: bert, roberta, deberta, hatebert, electra
+
+============================================================
+Training Model 1/5: bert-base-uncased
+Key: bert
+Batch Size: 128, Max Length: 512, Epochs: 8
+============================================================
+Creating DataLoaders...
+Created DataLoaders - Train: 489 batches, Val: 123 batches, Test: 131 batches
+
+=== Training bert-base-uncased ===
+Training on device: cuda
+Number of parameters: 109,486,854
+Training for 8 epochs...
+Early stopping patience: 3 epochs
+
+=== Epoch 1/8 ===
+Train Loss: 0.6585
+Val Loss: 0.6567
+Val F1 (Micro): 0.0568
+Val F1 (Macro): 0.0420
+Val ROC-AUC (Micro): 0.4617
+New best model saved! F1: 0.0568
+
+=== Epoch 2/8 ===
+Train Loss: 0.6263
+Val Loss: 0.5910
+Val F1 (Micro): 0.0746
+Val F1 (Macro): 0.0287
+Val ROC-AUC (Micro): 0.5010
+New best model saved! F1: 0.0746
+
+=== Epoch 3/8 ===
+Train Loss: 0.5250
+Val Loss: 0.4276
+Val F1 (Micro): 0.0235
+Val F1 (Macro): 0.0133
+Val ROC-AUC (Micro): 0.5748
+No improvement. Patience: 1/3
+
+=== Epoch 4/8 ===
+Train Loss: 0.3244
+Val Loss: 0.2216
+Val F1 (Micro): 0.0000
+Val F1 (Macro): 0.0000
+Val ROC-AUC (Micro): 0.7536
+No improvement. Patience: 2/3
+
+=== Epoch 5/8 ===
+Train Loss: 0.1912
+Val Loss: 0.1569
+Val F1 (Micro): 0.0000
+Val F1 (Macro): 0.0000
+Val ROC-AUC (Micro): 0.8376
+No improvement. Patience: 3/3
+Early stopping triggered! Best F1: 0.0746
+
+Training completed. Best F1: 0.0746 at epoch 2
+❌ Error training bert: x and y must have same first dimension, but have shapes (5,) and (10,)
+Continuing with next model...
+
+============================================================
+Training Model 2/5: roberta-base
+Key: roberta
+Batch Size: 128, Max Length: 512, Epochs: 8
+============================================================
+Creating DataLoaders...
+Created DataLoaders - Train: 489 batches, Val: 123 batches, Test: 131 batches
+
+=== Training roberta-base ===
+Training on device: cuda
+Number of parameters: 124,650,246
+Training for 8 epochs...
+Early stopping patience: 3 epochs
+
+=== Epoch 1/8 ===
+Train Loss: 0.6406
+Val Loss: 0.6383
+Val F1 (Micro): 0.0489
+Val F1 (Macro): 0.0173
+Val ROC-AUC (Micro): 0.5024
+New best model saved! F1: 0.0489
+
+=== Epoch 2/8 ===
+Train Loss: 0.6308
+Val Loss: 0.6173
+Val F1 (Micro): 0.0537
+Val F1 (Macro): 0.0174
+Val ROC-AUC (Micro): 0.5087
+New best model saved! F1: 0.0537
+
+=== Epoch 3/8 ===
+Train Loss: 0.5749
+Val Loss: 0.5203
+Val F1 (Micro): 0.0878
+Val F1 (Macro): 0.0176
+Val ROC-AUC (Micro): 0.5965
+New best model saved! F1: 0.0878
+
+=== Epoch 4/8 ===
+Train Loss: 0.2869
+Val Loss: 0.1529
+Val F1 (Micro): 0.0000
+Val F1 (Macro): 0.0000
+Val ROC-AUC (Micro): 0.8134
+No improvement. Patience: 1/3
+
+=== Epoch 5/8 ===
+Train Loss: 0.1401
+Val Loss: 0.1105
+Val F1 (Micro): 0.0000
+Val F1 (Macro): 0.0000
+Val ROC-AUC (Micro): 0.9560
+No improvement. Patience: 2/3
+
+=== Epoch 6/8 ===
+Train Loss: 0.1024
+Val Loss: 0.0817
+Val F1 (Micro): 0.3713
+Val F1 (Macro): 0.1137
+Val ROC-AUC (Micro): 0.9746
+New best model saved! F1: 0.3713
+
+=== Epoch 7/8 ===
+Train Loss: 0.0789
+Val Loss: 0.0670
+Val F1 (Micro): 0.7041
+Val F1 (Macro): 0.3695
+Val ROC-AUC (Micro): 0.9766
+New best model saved! F1: 0.7041
+
+=== Epoch 8/8 ===
+Train Loss: 0.0674
+Val Loss: 0.0619
+Val F1 (Micro): 0.7192
+Val F1 (Macro): 0.3777
+Val ROC-AUC (Micro): 0.9782
+New best model saved! F1: 0.7192
+
+Training completed. Best F1: 0.7192 at epoch 8
+❌ Error training roberta: x and y must have same first dimension, but have shapes (8,) and (16,)
+Continuing with next model...
+
+============================================================
+Training Model 3/5: microsoft/deberta-base
+Key: deberta
+Batch Size: 96, Max Length: 512, Epochs: 8
+============================================================
+Creating DataLoaders...
+Created DataLoaders - Train: 652 batches, Val: 163 batches, Test: 175 batches
+
+=== Training microsoft/deberta-base ===
+❌ Error training deberta: Due to a serious vulnerability issue in `torch.load`, even with `weights_only=True`, we now require users to upgrade torch to at least v2.6 in order to use the function. This version restriction does not apply when loading files with safetensors.
+See the vulnerability report here https://nvd.nist.gov/vuln/detail/CVE-2025-32434
+Continuing with next model...
+
+============================================================
+Training Model 4/5: martin-ha/toxic-comment-model
+Key: hatebert
+Batch Size: 128, Max Length: 512, Epochs: 8
+============================================================
+Creating DataLoaders...
+Created DataLoaders - Train: 489 batches, Val: 123 batches, Test: 131 batches
+
+=== Training martin-ha/toxic-comment-model ===
+❌ Error training hatebert: Due to a serious vulnerability issue in `torch.load`, even with `weights_only=True`, we now require users to upgrade torch to at least v2.6 in order to use the function. This version restriction does not apply when loading files with safetensors.
+See the vulnerability report here https://nvd.nist.gov/vuln/detail/CVE-2025-32434
+Continuing with next model...
+
+============================================================
+Training Model 5/5: google/electra-base-discriminator
+Key: electra
+Batch Size: 128, Max Length: 512, Epochs: 8
+============================================================
+Creating DataLoaders...
+Created DataLoaders - Train: 489 batches, Val: 123 batches, Test: 131 batches
+
+=== Training google/electra-base-discriminator ===
+❌ Error training electra: Due to a serious vulnerability issue in `torch.load`, even with `weights_only=True`, we now require users to upgrade torch to at least v2.6 in order to use the function. This version restriction does not apply when loading files with safetensors.
+See the vulnerability report here https://nvd.nist.gov/vuln/detail/CVE-2025-32434
+Continuing with next model...
+
+=== TRANSFORMER EXPERIMENTS COMPLETED ===
+Successfully trained 0 out of 5 models
+
+Experiments completed in 8618.59 seconds
+Generating comprehensive report...
+=== GENERATING COMPREHENSIVE REPORT ===
+Creating performance visualizations...
+Comprehensive comparison plot saved to /WAVE/users2/unix/ysuryavanshi/NLP Project/plots/comprehensive_comparison.png
+Per-class analysis plot saved to /WAVE/users2/unix/ysuryavanshi/NLP Project/plots/per_class_analysis.png
+Generating detailed report...
+Performance summary saved to /WAVE/users2/unix/ysuryavanshi/NLP Project/results/performance_summary.csv
+Class difficulty analysis saved to /WAVE/users2/unix/ysuryavanshi/NLP Project/results/class_difficulty_analysis.csv
+
+=== CLASS DIFFICULTY ANALYSIS ===
+Classes ranked by difficulty (hardest first):
+severe_toxic: Mean F1 = 0.4405 (±0.0246)
+identity_hate: Mean F1 = 0.5789 (±0.0167)
+threat: Mean F1 = 0.5866 (±0.0152)
+insult: Mean F1 = 0.7754 (±0.0009)
+toxic: Mean F1 = 0.8256 (±0.0046)
+obscene: Mean F1 = 0.8481 (±0.0015)
+Detailed report saved to /WAVE/users2/unix/ysuryavanshi/NLP Project/results/experiment_report.md
+Comprehensive report generation completed!
+Check the /WAVE/users2/unix/ysuryavanshi/NLP Project/results directory for all outputs.
+
+=== TOTAL EXECUTION TIME: 8621.75 seconds ===
+==========================================
+COMPLETE PIPELINE FINISHED at Thu Jun  5 00:27:22 PDT 2025
+==========================================
+Exit status: 0
+
+📁 RESULTS GENERATED:
+   - Baseline models: Logistic Regression, Random Forest
+   - Advanced models: BERT, RoBERTa, DeBERTa, HateBERT, ELECTRA
+   - Comprehensive comparison and analysis
+   - All plots and visualizations
+   - Per-category performance breakdown
+
+📊 Check results in:
+   - results/ directory for all CSV files
+   - plots/ directory for all visualizations
+   - models/ directory for saved model checkpoints

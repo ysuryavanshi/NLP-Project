@@ -1,0 +1,281 @@
+===========================================
+RUNNING FAILED MODELS ONLY
+Job ID: 118562
+Job Name: nlp-failed-models
+Node: gpu02
+Start Time: Thu Jun  5 11:48:24 PDT 2025
+Working Directory: /WAVE/users2/unix/ysuryavanshi/NLP Project
+Models: DeBERTa, HateBERT, ELECTRA
+Fix Applied: PyTorch CVE-2025-32434 vulnerability
+Resource allocation: 4 CPUs, 16384MB memory
+GPU allocation: 0
+Time allocation: 12 hours
+===========================================
+Loading TensorFlow module...
+Ensuring user packages take priority...
+Installing compatible typing_extensions...
+GPU Information:
+Thu Jun  5 11:48:34 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.86.15              Driver Version: 570.86.15      CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-PCIE-32GB           Off |   00000000:3B:00.0 Off |                    0 |
+| N/A   26C    P0             24W /  250W |       1MiB /  32768MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+Starting FAILED MODELS training with PyTorch vulnerability fixes...
+This will train: DeBERTa, HateBERT, ELECTRA
+Command: python run_with_env_fix.py
+✅ Moved system packages to end of path
+🚀 Starting with fixed environment...
+🎯 Selective Training: Failed Models Only
+This script trains only the models that failed due to PyTorch vulnerability:
+  1. microsoft/deberta-base
+  2. martin-ha/toxic-comment-model (HateBERT)
+  3. google/electra-base-discriminator
+
+✅ PyTorch CVE-2025-32434 vulnerability fixes are applied
+✅ All models now load successfully with safetensors
+✅ Ready for sbatch execution with full GPU resources
+
+🧪 Quick verification that models can be loaded...
+
+🔍 Testing microsoft/deberta-base...
+✅ Config loaded successfully
+Attempting safetensors loading...
+✅ microsoft/deberta-base loaded successfully with safetensors!
+
+🔍 Testing martin-ha/toxic-comment-model...
+✅ Config loaded successfully
+Attempting safetensors loading...
+✅ martin-ha/toxic-comment-model loaded successfully with safetensors!
+
+🔍 Testing google/electra-base-discriminator...
+✅ Config loaded successfully
+Attempting safetensors loading...
+✅ google/electra-base-discriminator loaded successfully with safetensors!
+
+✅ All models verified as loadable!
+
+======================================================================
+🔄 Running ONLY the failed transformer models
+Models: DeBERTa, HateBERT, ELECTRA
+Using ORIGINAL configurations (full batch sizes, 512 tokens, 8 epochs)
+======================================================================
+📋 Model Configurations:
+  - DEBERTA: microsoft/deberta-base
+    Batch Size: 96, Max Length: 512, Epochs: 8
+  - HATEBERT: martin-ha/toxic-comment-model
+    Batch Size: 128, Max Length: 512, Epochs: 8
+  - ELECTRA: google/electra-base-discriminator
+    Batch Size: 128, Max Length: 512, Epochs: 8
+
+🚀 Starting training with PyTorch vulnerability fixes applied...
+=== RUNNING TRANSFORMER EXPERIMENTS ===
+
+Loading data...
+Train data shape: (78189, 8)
+Test data shape: (16755, 8)
+Test labels shape: (153164, 7)
+Preprocessing data...
+Test data already contains labels, using them directly.
+After preprocessing - Train: (78189, 9), Test: (16755, 9)
+Creating data splits...
+Train split: 62,551 samples
+Validation split: 15,638 samples
+Test split: 16,755 samples
+Training 3 models: deberta, hatebert, electra
+
+============================================================
+Training Model 1/3: microsoft/deberta-base
+Key: deberta
+Batch Size: 96, Max Length: 512, Epochs: 8
+============================================================
+Creating DataLoaders...
+Created DataLoaders - Train: 652 batches, Val: 163 batches, Test: 175 batches
+
+=== Training microsoft/deberta-base ===
+Attempting to load microsoft/deberta-base with safetensors...
+✅ Successfully loaded microsoft/deberta-base with safetensors
+Training on device: cuda
+Number of parameters: 138,606,342
+Training for 8 epochs...
+Early stopping patience: 3 epochs
+
+=== Epoch 1/8 ===
+❌ Error training deberta: value cannot be converted to type at::Half without overflow
+Continuing with next model...
+
+============================================================
+Training Model 2/3: martin-ha/toxic-comment-model
+Key: hatebert
+Batch Size: 128, Max Length: 512, Epochs: 8
+============================================================
+Creating DataLoaders...
+Created DataLoaders - Train: 489 batches, Val: 123 batches, Test: 131 batches
+
+=== Training martin-ha/toxic-comment-model ===
+Attempting to load martin-ha/toxic-comment-model with safetensors...
+✅ Successfully loaded martin-ha/toxic-comment-model with safetensors
+Training on device: cuda
+Number of parameters: 66,367,494
+Training for 8 epochs...
+Early stopping patience: 3 epochs
+
+=== Epoch 1/8 ===
+Train Loss: 0.7735
+Val Loss: 0.7685
+Val F1 (Micro): 0.0298
+Val F1 (Macro): 0.0842
+Val ROC-AUC (Micro): 0.2880
+New best model saved! F1: 0.0298
+
+=== Epoch 2/8 ===
+Train Loss: 0.7472
+Val Loss: 0.6855
+Val F1 (Micro): 0.0333
+Val F1 (Macro): 0.0926
+Val ROC-AUC (Micro): 0.4140
+New best model saved! F1: 0.0333
+
+=== Epoch 3/8 ===
+Train Loss: 0.6190
+Val Loss: 0.5453
+Val F1 (Micro): 0.1197
+Val F1 (Macro): 0.1244
+Val ROC-AUC (Micro): 0.6354
+New best model saved! F1: 0.1197
+
+=== Epoch 4/8 ===
+Train Loss: 0.4952
+Val Loss: 0.4180
+Val F1 (Micro): 0.1282
+Val F1 (Macro): 0.1007
+Val ROC-AUC (Micro): 0.8072
+New best model saved! F1: 0.1282
+
+=== Epoch 5/8 ===
+Train Loss: 0.3708
+Val Loss: 0.3015
+Val F1 (Micro): 0.1344
+Val F1 (Macro): 0.0893
+Val ROC-AUC (Micro): 0.8899
+New best model saved! F1: 0.1344
+
+=== Epoch 6/8 ===
+Train Loss: 0.2647
+Val Loss: 0.2103
+Val F1 (Micro): 0.1447
+Val F1 (Macro): 0.0968
+Val ROC-AUC (Micro): 0.9123
+New best model saved! F1: 0.1447
+
+=== Epoch 7/8 ===
+Train Loss: 0.1911
+Val Loss: 0.1574
+Val F1 (Micro): 0.1356
+Val F1 (Macro): 0.0893
+Val ROC-AUC (Micro): 0.9255
+No improvement. Patience: 1/3
+
+=== Epoch 8/8 ===
+Train Loss: 0.1514
+Val Loss: 0.1303
+Val F1 (Micro): 0.1604
+Val F1 (Macro): 0.1030
+Val ROC-AUC (Micro): 0.9375
+New best model saved! F1: 0.1604
+
+Training completed. Best F1: 0.1604 at epoch 8
+Training history plot saved to /WAVE/users2/unix/ysuryavanshi/NLP Project/plots/martin-ha_toxic-comment-model_training_history.png
+
+=== Evaluating martin-ha/toxic-comment-model on Test Set ===
+Loaded best model checkpoint
+Test Loss: 0.1295
+Test F1 (Micro): 0.1473
+Test F1 (Macro): 0.0958
+Test ROC-AUC (Micro): 0.9353
+
+=== Per-Class Test F1 Scores ===
+toxic: 0.0879
+severe_toxic: 0.0000
+obscene: 0.2716
+threat: 0.0000
+insult: 0.1329
+identity_hate: 0.0822
+✅ HATEBERT completed successfully!
+   Best F1: 0.1604
+   Test F1-Micro: 0.1473
+
+============================================================
+Training Model 3/3: google/electra-base-discriminator
+Key: electra
+Batch Size: 128, Max Length: 512, Epochs: 8
+============================================================
+Creating DataLoaders...
+Created DataLoaders - Train: 489 batches, Val: 123 batches, Test: 131 batches
+
+=== Training google/electra-base-discriminator ===
+Attempting to load google/electra-base-discriminator with safetensors...
+✅ Successfully loaded google/electra-base-discriminator with safetensors
+Training on device: cuda
+Number of parameters: 108,896,262
+Training for 8 epochs...
+Early stopping patience: 3 epochs
+
+=== Epoch 1/8 ===
+❌ Error training electra: CUDA out of memory. Tried to allocate 768.00 MiB. GPU 0 has a total capacity of 31.73 GiB of which 596.19 MiB is free. Including non-PyTorch memory, this process has 31.15 GiB memory in use. Of the allocated memory 30.69 GiB is allocated by PyTorch, and 83.94 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Continuing with next model...
+
+=== TRANSFORMER EXPERIMENTS COMPLETED ===
+Successfully trained 1 out of 3 models
+
+🎉 TRAINING COMPLETED!
+Successfully trained 1 out of 3 models
+==================================================
+📊 FINAL RESULTS:
+
+HATEBERT:
+  Test F1 (Micro): 0.1473
+  Test F1 (Macro): 0.0958
+  Test ROC-AUC:    0.9353
+  Test Accuracy:   0.8893
+
+✅ Original configuration restored
+Exit status: 0
+===========================================
+FAILED MODELS TRAINING FINISHED at Thu Jun  5 12:36:18 PDT 2025
+===========================================
+Final GPU status:
+Thu Jun  5 12:36:18 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.86.15              Driver Version: 570.86.15      CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-PCIE-32GB           Off |   00000000:3B:00.0 Off |                    0 |
+| N/A   51C    P0             53W /  250W |       1MiB /  32768MiB |      1%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+

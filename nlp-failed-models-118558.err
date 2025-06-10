@@ -1,0 +1,10 @@
+WARNING: Ignoring invalid distribution -rotobuf (/WAVE/users2/unix/ysuryavanshi/.local/lib/python3.9/site-packages)
+WARNING: Ignoring invalid distribution -rotobuf (/WAVE/users2/unix/ysuryavanshi/.local/lib/python3.9/site-packages)
+Traceback (most recent call last):
+  File "/WAVE/users2/unix/ysuryavanshi/NLP Project/run_failed_models_fixed.py", line 39, in <module>
+    from transformer_models import run_transformer_experiments
+  File "/WAVE/users2/unix/ysuryavanshi/NLP Project/transformer_models.py", line 10, in <module>
+    import torch
+  File "/WAVE/users2/unix/ysuryavanshi/.local/lib/python3.9/site-packages/torch/__init__.py", line 405, in <module>
+    from torch._C import *  # noqa: F403
+ImportError: /WAVE/users2/unix/ysuryavanshi/.local/lib/python3.9/site-packages/torch/lib/../../nvidia/cusparse/lib/libcusparse.so.12: undefined symbol: __nvJitLinkGetErrorLog_12_6, version libnvJitLink.so.12

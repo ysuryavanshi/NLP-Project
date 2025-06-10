@@ -1,0 +1,171 @@
+===========================================
+FINAL RUN & AGGREGATION
+Job ID: 118581
+Node: gpu02
+Start Time: Thu Jun  5 16:02:26 PDT 2025
+Models to run: DeBERTa, ELECTRA
+This script will train the final models and then aggregate all results.
+===========================================
+Loading TensorFlow/20231212 module...
+Setting environment to prioritize local packages...
+GPU Information:
+Thu Jun  5 16:02:39 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.86.15              Driver Version: 570.86.15      CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-PCIE-32GB           Off |   00000000:3B:00.0 Off |                    0 |
+| N/A   26C    P0             24W /  250W |       1MiB /  32768MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+Starting Final Run & Aggregation script...
+Command: python run_and_aggregate.py
+🎯 Starting Final Run & Aggregation Process
+🚀 Models to run: deberta, electra
+=== RUNNING TRANSFORMER EXPERIMENTS ===
+
+Loading data...
+Train data shape: (78189, 8)
+Test data shape: (16755, 8)
+Test labels shape: (153164, 7)
+Preprocessing data...
+Test data already contains labels, using them directly.
+After preprocessing - Train: (78189, 9), Test: (16755, 9)
+Creating data splits...
+Train split: 62,551 samples
+Validation split: 15,638 samples
+Test split: 16,755 samples
+Training 2 models: deberta, electra
+
+============================================================
+Training Model 1/2: microsoft/deberta-base
+Key: deberta
+Batch Size: 96, Max Length: 512, Epochs: 8
+============================================================
+Creating DataLoaders...
+Created DataLoaders - Train: 652 batches, Val: 163 batches, Test: 175 batches
+
+=== Training microsoft/deberta-base ===
+Attempting to load microsoft/deberta-base with safetensors...
+✅ Successfully loaded microsoft/deberta-base with safetensors
+Training on device: cuda
+Mixed precision training: DISABLED
+Number of parameters: 138,606,342
+Training for 8 epochs...
+Early stopping patience: 3 epochs
+
+=== Epoch 1/8 ===
+❌ Error training deberta: CUDA out of memory. Tried to allocate 2.25 GiB. GPU 0 has a total capacity of 31.73 GiB of which 946.19 MiB is free. Including non-PyTorch memory, this process has 30.80 GiB memory in use. Of the allocated memory 30.36 GiB is allocated by PyTorch, and 82.89 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Continuing with next model...
+
+============================================================
+Training Model 2/2: google/electra-base-discriminator
+Key: electra
+Batch Size: 64, Max Length: 512, Epochs: 8
+============================================================
+Creating DataLoaders...
+Created DataLoaders - Train: 978 batches, Val: 245 batches, Test: 262 batches
+
+=== Training google/electra-base-discriminator ===
+Attempting to load google/electra-base-discriminator with safetensors...
+✅ Successfully loaded google/electra-base-discriminator with safetensors
+Training on device: cuda
+Mixed precision training: ENABLED
+Number of parameters: 108,896,262
+Training for 8 epochs...
+Early stopping patience: 3 epochs
+
+=== Epoch 1/8 ===
+Train Loss: 0.6648
+Val Loss: 0.6637
+Val F1 (Micro): 0.0449
+Val F1 (Macro): 0.0785
+Val ROC-AUC (Micro): 0.4450
+New best model saved! F1: 0.0449
+
+=== Epoch 2/8 ===
+Train Loss: 0.6020
+Val Loss: 0.5317
+Val F1 (Micro): 0.0089
+Val F1 (Macro): 0.0134
+Val ROC-AUC (Micro): 0.5028
+No improvement. Patience: 1/3
+
+=== Epoch 3/8 ===
+Train Loss: 0.3875
+Val Loss: 0.2311
+Val F1 (Micro): 0.0000
+Val F1 (Macro): 0.0000
+Val ROC-AUC (Micro): 0.7655
+No improvement. Patience: 2/3
+
+=== Epoch 4/8 ===
+Train Loss: 0.1958
+Val Loss: 0.1555
+Val F1 (Micro): 0.0000
+Val F1 (Macro): 0.0000
+Val ROC-AUC (Micro): 0.8702
+No improvement. Patience: 3/3
+Early stopping triggered! Best F1: 0.0449
+
+Training completed. Best F1: 0.0449 at epoch 1
+Training history plot saved to /WAVE/users2/unix/ysuryavanshi/NLP Project/plots/google_electra-base-discriminator_training_history.png
+
+=== Evaluating google/electra-base-discriminator on Test Set ===
+Loaded best model checkpoint
+Test Loss: 0.6635
+Test F1 (Micro): 0.0443
+Test F1 (Macro): 0.0754
+Test ROC-AUC (Micro): 0.4432
+
+=== Per-Class Test F1 Scores ===
+toxic: 0.0939
+severe_toxic: 0.0151
+obscene: 0.1963
+threat: 0.0049
+insult: 0.1003
+identity_hate: 0.0420
+✅ ELECTRA completed successfully!
+   Best F1: 0.0449
+   Test F1-Micro: 0.0443
+
+=== TRANSFORMER EXPERIMENTS COMPLETED ===
+Successfully trained 1 out of 2 models
+
+✅ Original model configuration restored.
+
+🔍 Loading all existing and new results for final report...
+  - Found existing result for 'bert' at /WAVE/users2/unix/ysuryavanshi/NLP Project/results/bert-base-uncased_test_metrics.csv
+  - Found existing result for 'roberta' at /WAVE/users2/unix/ysuryavanshi/NLP Project/results/roberta-base_test_metrics.csv
+  - WARNING: No result file found for 'deberta'
+  - Found existing result for 'hatebert' at /WAVE/users2/unix/ysuryavanshi/NLP Project/results/martin-ha_toxic-comment-model_test_metrics.csv
+  - Found new result for 'electra'
+
+📊 Generating final comprehensive report for all models...
+Creating comprehensive model comparison...
+Comparison table saved to /WAVE/users2/unix/ysuryavanshi/NLP Project/results/all_models_comparison.csv
+
+📊 MODEL PERFORMANCE RANKING:
+----------------------------------------------------------------------
+ 3. ROBERTA    | F1-Micro: 0.7235 | F1-Macro: 0.3798 | ROC-AUC: 0.9796
+ 4. HATEBERT   | F1-Micro: 0.1473 | F1-Macro: 0.0958 | ROC-AUC: 0.9353
+ 2. BERT       | F1-Micro: 0.0745 | F1-Macro: 0.0319 | ROC-AUC: 0.5012
+ 1. ELECTRA    | F1-Micro: 0.0443 | F1-Macro: 0.0754 | ROC-AUC: 0.4432
+Comprehensive comparison plot saved to /WAVE/users2/unix/ysuryavanshi/NLP Project/plots/comprehensive_transformer_comparison.png
+
+🎉 Process Complete!
+Exit status: 0
+===========================================
+FINAL RUN & AGGREGATION FINISHED at Thu Jun  5 17:03:17 PDT 2025
+===========================================
