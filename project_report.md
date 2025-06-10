@@ -148,3 +148,45 @@ By tackling the class imbalance problem head-on, the field can move towards deve
 *   Pedregosa, F., et al. (2011). Scikit-learn: Machine Learning in Python. *Journal of Machine Learning Research, 12*, 2825-2830.
 *   Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I. (2017). Attention is all you need. *Advances in Neural Information Processing Systems*.
 *   Wolf, T., et al. (2020). Transformers: State-of-the-Art Natural Language Processing. *Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing: System Demonstrations*. 
+
+---
+
+## 7. Appendix
+
+This appendix contains supplementary visualizations produced during the experimental process, including training histories for the transformer models and additional performance comparison charts.
+
+### 7.1. Transformer Model Training Histories
+
+The following plots show the training and validation loss curves for each of the primary transformer models that were fine-tuned. The "Early Stopping" mechanism halted training when the validation loss ceased to improve, preventing overfitting.
+
+**Figure A1: BERT (`bert-base-uncased`) Training History**
+*The training for BERT was unstable, with validation loss fluctuating significantly, suggesting difficulty in converging on this specific dataset.*
+![BERT Training History](plots/bert-base-uncased_training_history.png)
+
+**Figure A2: RoBERTa (`roberta-base`) Training History**
+*RoBERTa shows a much more stable convergence pattern, with validation loss decreasing steadily before early stopping occurred, indicating effective learning.*
+![RoBERTa Training History](plots/roberta-base_training_history.png)
+
+**Figure A3: ELECTRA (`google/electra-base-discriminator`) Training History**
+*Similar to BERT, ELECTRA's training was highly volatile, failing to find a stable convergence point.*
+![ELECTRA Training History](plots/google_electra-base-discriminator_training_history.png)
+
+**Figure A4: HateBERT (`martin-ha/toxic-comment-model`) Training History**
+*The domain-specialized HateBERT variant also displayed unstable training behavior on this dataset.*
+![HateBERT Training History](plots/martin-ha_toxic-comment-model_training_history.png)
+
+### 7.2. Additional Performance Comparisons
+
+These charts provide alternative views of the model performance comparisons.
+
+**Figure A5: Baseline Model Comparison**
+*This plot isolates the performance of the Logistic Regression and Random Forest models.*
+![Baseline Model Comparison](plots/baseline_comparison.png)
+
+**Figure A6: Transformer Model Comparison**
+*This plot focuses only on the performance of the four fine-tuned transformer models, highlighting the significant lead of RoBERTa.*
+![Transformer Model Comparison](plots/transformer_comparison.png)
+
+**Figure A7: Comprehensive Transformer Comparison (Detailed)**
+*This plot provides another view of the transformer models' performance across multiple metrics.*
+![Comprehensive Transformer Comparison](plots/comprehensive_transformer_comparison.png) 
