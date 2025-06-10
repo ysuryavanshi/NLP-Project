@@ -13,194 +13,99 @@ warnings.filterwarnings('ignore')
 from config import *
 
 def load_all_results():
-    """Load all experimental results from saved files"""
-    results = {}
+    """Load all model result CSVs into a single dict."""
+    results = {'baseline': {}, 'transformers': {}}
     
-    # Load baseline results - look for logistic regression and random forest files
-    baseline_files = glob.glob(str(RESULTS_DIR / "logistic_regression*metrics.csv")) + \
-                    glob.glob(str(RESULTS_DIR / "random_forest*metrics.csv"))
-    if baseline_files:
-        results['baseline'] = {}
-        for file in baseline_files:
+    # Baseline models
+    baseline_patterns = ["logistic_regression*metrics.csv", "random_forest*metrics.csv"]
+    for pattern in baseline_patterns:
+        for file in glob.glob(str(RESULTS_DIR / pattern)):
             model_name = Path(file).stem.replace('_metrics', '').replace('_test', '')
             results['baseline'][model_name] = pd.read_csv(file).iloc[0].to_dict()
     
-    # Load transformer results
-    transformer_files = glob.glob(str(RESULTS_DIR / "*bert*metrics.csv")) + \
-                       glob.glob(str(RESULTS_DIR / "*roberta*metrics.csv")) + \
-                       glob.glob(str(RESULTS_DIR / "*electra*metrics.csv")) + \
-                       glob.glob(str(RESULTS_DIR / "*martin-ha*metrics.csv"))
-    if transformer_files:
-        results['transformers'] = {}
-        for file in transformer_files:
+    # Transformer models
+    transformer_patterns = ["*bert*metrics.csv", "*roberta*metrics.csv", "*electra*metrics.csv", "*martin-ha*metrics.csv"]
+    for pattern in transformer_patterns:
+        for file in glob.glob(str(RESULTS_DIR / pattern)):
             model_name = Path(file).stem.replace('_metrics', '').replace('_test', '')
             results['transformers'][model_name] = pd.read_csv(file).iloc[0].to_dict()
-    
+            
     return results
 
 def create_performance_comparison(results, save_plot=True):
-    """Create comprehensive performance comparison across all models"""
+    """Plot a comprehensive comparison of all models."""
     if not results:
-        print("No results found to compare")
+        print("No results to compare.")
         return
     
-    # Prepare data for plotting
-    all_models = []
-    all_metrics = []
-    
+    all_models, all_metrics = [], []
     for category, models in results.items():
         for model_name, metrics in models.items():
             all_models.append(f"{category}_{model_name}")
             all_metrics.append(metrics)
     
     if not all_models:
-        print("No models found in results")
         return
+
+    fig, axes = plt.subplots(2, 2, figsize=(18, 14))
+    fig.suptitle('Comprehensive Model Performance Comparison', fontsize=16)
     
-    # Create comprehensive comparison plot
-    fig, axes = plt.subplots(2, 3, figsize=(20, 12))
-    fig.suptitle('Comprehensive Model Performance Comparison', fontsize=16, fontweight='bold')
+    df = pd.DataFrame(all_metrics, index=all_models)
     
-    # 1. Overall F1 Scores
-    f1_micro_scores = [metrics['f1_micro'] for metrics in all_metrics]
-    f1_macro_scores = [metrics['f1_macro'] for metrics in all_metrics]
-    
-    x = np.arange(len(all_models))
-    width = 0.35
-    
-    axes[0, 0].bar(x - width/2, f1_micro_scores, width, label='F1 Micro', alpha=0.8)
-    axes[0, 0].bar(x + width/2, f1_macro_scores, width, label='F1 Macro', alpha=0.8)
-    axes[0, 0].set_xlabel('Models')
-    axes[0, 0].set_ylabel('F1 Score')
-    axes[0, 0].set_title('F1 Score Comparison')
-    axes[0, 0].set_xticks(x)
-    axes[0, 0].set_xticklabels(all_models, rotation=45, ha='right')
-    axes[0, 0].legend()
-    axes[0, 0].grid(True, alpha=0.3)
-    
-    # 2. ROC-AUC Scores
-    roc_auc_micro = [metrics['roc_auc_micro'] for metrics in all_metrics]
-    roc_auc_macro = [metrics['roc_auc_macro'] for metrics in all_metrics]
-    
-    axes[0, 1].bar(x - width/2, roc_auc_micro, width, label='ROC-AUC Micro', alpha=0.8)
-    axes[0, 1].bar(x + width/2, roc_auc_macro, width, label='ROC-AUC Macro', alpha=0.8)
-    axes[0, 1].set_xlabel('Models')
-    axes[0, 1].set_ylabel('ROC-AUC Score')
-    axes[0, 1].set_title('ROC-AUC Comparison')
-    axes[0, 1].set_xticks(x)
-    axes[0, 1].set_xticklabels(all_models, rotation=45, ha='right')
-    axes[0, 1].legend()
-    axes[0, 1].grid(True, alpha=0.3)
-    
-    # 3. Accuracy and Precision
-    accuracy_scores = [metrics['accuracy'] for metrics in all_metrics]
-    precision_macro = [metrics['precision_macro'] for metrics in all_metrics]
-    
-    axes[0, 2].bar(x - width/2, accuracy_scores, width, label='Accuracy', alpha=0.8)
-    axes[0, 2].bar(x + width/2, precision_macro, width, label='Precision Macro', alpha=0.8)
-    axes[0, 2].set_xlabel('Models')
-    axes[0, 2].set_ylabel('Score')
-    axes[0, 2].set_title('Accuracy vs Precision')
-    axes[0, 2].set_xticks(x)
-    axes[0, 2].set_xticklabels(all_models, rotation=45, ha='right')
-    axes[0, 2].legend()
-    axes[0, 2].grid(True, alpha=0.3)
-    
-    # 4-6. Per-class F1 scores for best performing models
-    # Find actual indices first
-    baseline_indices = [i for i, model in enumerate(all_models) if 'baseline' in model]
-    transformer_indices = [i for i, model in enumerate(all_models) if 'transformer' in model]
-    
-    # Only calculate argmax if we have models
-    best_baseline_idx = None
-    best_transformer_idx = None
-    
-    if baseline_indices:
-        baseline_f1_scores = [all_metrics[i]['f1_micro'] for i in baseline_indices]
-        best_baseline_idx = baseline_indices[np.argmax(baseline_f1_scores)]
-    
-    if transformer_indices:
-        transformer_f1_scores = [all_metrics[i]['f1_micro'] for i in transformer_indices]
-        best_transformer_idx = transformer_indices[np.argmax(transformer_f1_scores)]
-    
-    if baseline_indices and best_baseline_idx is not None:
-        baseline_f1_scores = [all_metrics[best_baseline_idx][f'f1_{label}'] for label in TARGET_COLUMNS]
+    # F1 Scores, ROC-AUC, and Accuracy
+    df[['f1_micro', 'f1_macro']].plot(kind='bar', ax=axes[0, 0], title='F1 Scores', rot=45)
+    df[['roc_auc_micro', 'roc_auc_macro']].plot(kind='bar', ax=axes[0, 1], title='ROC-AUC Scores', rot=45)
+    df[['accuracy']].plot(kind='bar', ax=axes[0, 2], title='Accuracy', rot=45)
+
+    # Best baseline vs. best transformer
+    baseline_df = df[df.index.str.contains('baseline')]
+    transformer_df = df[df.index.str.contains('transformer')]
+
+    if not baseline_df.empty and not transformer_df.empty:
+        best_baseline = baseline_df['f1_micro'].idxmax()
+        best_transformer = transformer_df['f1_micro'].idxmax()
+
+        baseline_f1_per_class = [baseline_df.loc[best_baseline, f'f1_{label}'] for label in TARGET_COLUMNS]
+        transformer_f1_per_class = [transformer_df.loc[best_transformer, f'f1_{label}'] for label in TARGET_COLUMNS]
+
+        comparison_data = pd.DataFrame({
+            best_baseline: baseline_f1_per_class,
+            best_transformer: transformer_f1_per_class
+        }, index=TARGET_COLUMNS)
         
-        axes[1, 0].bar(TARGET_COLUMNS, baseline_f1_scores, alpha=0.8)
-        axes[1, 0].set_title(f'Best Baseline: {all_models[best_baseline_idx]}')
-        axes[1, 0].set_ylabel('F1 Score')
-        axes[1, 0].tick_params(axis='x', rotation=45)
-        axes[1, 0].grid(True, alpha=0.3)
+        comparison_data.plot(kind='bar', ax=axes[1, 0], title='Best Baseline vs. Best Transformer (Per-Class F1)', rot=45)
+        axes[1,0].set_ylabel('F1 Score')
+
+    # Per-class f1 heatmap
+    f1_cols = [f'f1_{label}' for label in TARGET_COLUMNS]
+    per_class_df = df[f1_cols]
+    per_class_df.columns = TARGET_COLUMNS
+    sns.heatmap(per_class_df, annot=True, cmap='viridis', ax=axes[1, 1], fmt='.3f')
+    axes[1, 1].set_title('Per-Class F1 Score Heatmap')
     
-    if transformer_indices and best_transformer_idx is not None:
-        transformer_f1_scores = [all_metrics[best_transformer_idx][f'f1_{label}'] for label in TARGET_COLUMNS]
-        
-        axes[1, 1].bar(TARGET_COLUMNS, transformer_f1_scores, alpha=0.8, color='orange')
-        axes[1, 1].set_title(f'Best Transformer: {all_models[best_transformer_idx]}')
-        axes[1, 1].set_ylabel('F1 Score')
-        axes[1, 1].tick_params(axis='x', rotation=45)
-        axes[1, 1].grid(True, alpha=0.3)
-        
-        # Compare best baseline vs best transformer per class
-        if baseline_indices and best_baseline_idx is not None:
-            x_labels = np.arange(len(TARGET_COLUMNS))
-            width = 0.35
-            
-            axes[1, 2].bar(x_labels - width/2, baseline_f1_scores, width, 
-                          label=all_models[best_baseline_idx], alpha=0.8)
-            axes[1, 2].bar(x_labels + width/2, transformer_f1_scores, width, 
-                          label=all_models[best_transformer_idx], alpha=0.8)
-            axes[1, 2].set_xlabel('Toxicity Labels')
-            axes[1, 2].set_ylabel('F1 Score')
-            axes[1, 2].set_title('Best Models Comparison')
-            axes[1, 2].set_xticks(x_labels)
-            axes[1, 2].set_xticklabels(TARGET_COLUMNS, rotation=45)
-            axes[1, 2].legend()
-            axes[1, 2].grid(True, alpha=0.3)
-    
-    plt.tight_layout()
-    
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
     if save_plot:
-        plt.savefig(PLOTS_DIR / 'comprehensive_comparison.png', dpi=DPI, bbox_inches='tight')
-        print(f"Comprehensive comparison plot saved to {PLOTS_DIR / 'comprehensive_comparison.png'}")
-    
+        plt.savefig(PLOTS_DIR / 'comprehensive_comparison.png', dpi=DPI)
     plt.show()
 
 def create_performance_table(results):
-    """Create a performance summary table"""
-    if not results:
-        return None
+    """Create and save a summary table of model performance."""
+    if not results: return None
     
-    # Prepare data for table
     table_data = []
-    
     for category, models in results.items():
         for model_name, metrics in models.items():
-            row = {
-                'Category': category.title(),
-                'Model': model_name.replace('_', ' ').title(),
-                'F1 Micro': f"{metrics['f1_micro']:.4f}",
-                'F1 Macro': f"{metrics['f1_macro']:.4f}",
-                'ROC-AUC Micro': f"{metrics['roc_auc_micro']:.4f}",
-                'ROC-AUC Macro': f"{metrics['roc_auc_macro']:.4f}",
-                'Accuracy': f"{metrics['accuracy']:.4f}",
-                'Precision Macro': f"{metrics['precision_macro']:.4f}",
-                'Recall Macro': f"{metrics['recall_macro']:.4f}"
-            }
+            row = {'Category': category.title(), 'Model': model_name.replace('_', ' ').title()}
+            for key, val in metrics.items():
+                if isinstance(val, float):
+                    row[key.replace('_', ' ').title()] = f"{val:.4f}"
             table_data.append(row)
-    
-    # Create DataFrame
+            
     df = pd.DataFrame(table_data)
-    
-    # Sort by F1 Micro score (descending)
-    df['F1_Micro_Numeric'] = df['F1 Micro'].astype(float)
-    df = df.sort_values('F1_Micro_Numeric', ascending=False)
-    df = df.drop('F1_Micro_Numeric', axis=1)
-    
-    # Save to CSV
+    df = df.sort_values('F1 Micro', ascending=False)
     df.to_csv(RESULTS_DIR / 'performance_summary.csv', index=False)
-    print(f"Performance summary saved to {RESULTS_DIR / 'performance_summary.csv'}")
     
+    print(f"Performance summary saved to {RESULTS_DIR / 'performance_summary.csv'}")
     return df
 
 def create_per_class_analysis(results, save_plot=True):
@@ -349,71 +254,20 @@ def generate_detailed_report(results):
     return report_content
 
 def generate_comprehensive_report():
-    """
-    Generate a comprehensive report with all analyses, plots, and summaries.
-    """
-    print("=== GENERATING COMPREHENSIVE REPORT ===")
+    """Generate all standard evaluation plots and tables."""
+    print("--- Generating Comprehensive Evaluation Report ---")
+    results = load_all_results()
     
-    # 1. Load all results
-    all_results = load_all_results()
-    if not all_results:
-        print("No results found. Cannot generate report.")
+    if not results:
+        print("No results found. Exiting.")
         return
-
-    # 2. Create comparison plots and tables
-    create_performance_comparison(all_results, save_plot=True)
-    create_per_class_analysis(all_results, save_plot=True)
-    
-    # 3. Generate the main part of the report
-    report_content = generate_detailed_report(all_results)
-
-    # 4. Add Confusion Matrices to the report
-    report_content += "## Confusion Matrices\n\n"
-    report_content += "Confusion matrices for the best performing transformer model.\n\n"
-    
-    best_transformer_model_name = "bert" # Fallback
-    if 'transformers' in all_results and all_results['transformers']:
-        # Find the model with the highest f1_micro score
-        best_transformer_model_name = max(all_results['transformers'], key=lambda m: all_results['transformers'][m].get('f1_micro', 0))
-
-    # Path to the prediction file
-    pred_file = RESULTS_DIR / f'{best_transformer_model_name}_test_predictions.csv'
-    
-    if pred_file.exists():
-        try:
-            pred_df = pd.read_csv(pred_file)
-            y_true = pred_df[TARGET_COLUMNS].values
-            
-            # Determine if predictions are probabilities or binary labels
-            if f'prob_{TARGET_COLUMNS[0]}' in pred_df.columns:
-                y_pred_proba = pred_df[[f'prob_{col}' for col in TARGET_COLUMNS]].values
-                y_pred = (y_pred_proba > 0.5).astype(int)
-            elif f'pred_{TARGET_COLUMNS[0]}' in pred_df.columns:
-                y_pred = pred_df[[f'pred_{col}' for col in TARGET_COLUMNS]].values
-            else:
-                raise ValueError("Prediction columns not found in test predictions file.")
-
-            plot_confusion_matrices(y_true, y_pred, best_transformer_model_name)
-            report_content += f"![Confusion Matrices for {best_transformer_model_name}](plots/confusion_matrix_{best_transformer_model_name}.png)\n\n"
-        except Exception as e:
-            report_content += f"*Error generating confusion matrix: {e}*\n\n"
-    else:
-        report_content += f"*Prediction file not found at `{pred_file}`, skipping confusion matrix generation.*\n\n"
-
-    # 5. Add Class Difficulty Analysis
-    report_content += "## Class Difficulty Analysis\n\n"
-    report_content += "This section analyzes which toxicity classes were the most challenging to predict across all models, based on average F1 scores.\n\n"
-    difficulty_df = analyze_class_difficulty(all_results)
-    if difficulty_df is not None:
-        report_content += difficulty_df.to_markdown(index=False) + "\n\n"
-    
-    # 6. Save the final report
-    report_path = RESULTS_DIR / 'evaluation_report.md'
-    with open(report_path, 'w') as f:
-        f.write(report_content)
         
-    print(f"Comprehensive report saved to {report_path}")
-    print("Report generation complete!")
+    print(f"Found results for {len(results.get('baseline', {}))} baseline models and {len(results.get('transformers', {}))} transformer models.")
+    
+    create_performance_table(results)
+    create_performance_comparison(results)
+    
+    print("\n--- Evaluation Report Generation Complete ---")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     generate_comprehensive_report() 

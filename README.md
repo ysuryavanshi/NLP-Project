@@ -1,59 +1,104 @@
 # Toxic Comment Classification
 
-**Authors:** Yash Suryavanshi and Rohit Roy Chowdhury  
-**Course:** NLP Project  
-**Python Version:** 3.9.19
-
-## Project Overview
-
-This project implements a comprehensive multi-label toxic comment classification system using both traditional machine learning approaches and state-of-the-art transformer models. The goal is to automatically detect multiple types of toxicity in online comments to help moderators filter harmful content and improve community health.
+This project builds a system to classify toxic online comments using both traditional ML models and transformers. The goal is to identify different types of toxicity, like insults, threats, and hate speech.
 
 ## Dataset
 
-- **Source:** [Kaggle Toxic Comment Classification Challenge](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge)
-- **Size:** ~159,000 Wikipedia talk comments
-- **Task:** Multi-label binary classification
-- **Labels:** 
-  - `toxic` - General toxicity
-  - `severe_toxic` - Severe toxicity
-  - `obscene` - Obscene language
-  - `threat` - Threats
-  - `insult` - Insults
-  - `identity_hate` - Identity-based hate
+The data comes from Kaggle's [Toxic Comment Classification Challenge](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge), which has about 160,000 comments from Wikipedia talk pages. Each comment is labeled for six types of toxicity: `toxic`, `severe_toxic`, `obscene`, `threat`, `insult`, and `identity_hate`.
 
 ## Project Structure
 
 ```
-NLP Project/
+.
 ├── data/
-│   ├── raw/                 # Raw dataset files
-│   └── processed/           # Processed data files
-├── models/                  # Saved model files
-├── plots/                   # Generated visualizations
-├── results/                 # Experimental results and metrics
-├── nlp_env/                # Virtual environment
-├── config.py               # Configuration and hyperparameters
-├── data_utils.py           # Data loading and preprocessing
-├── baseline_models.py      # Traditional ML models
-├── transformer_models.py   # BERT and RoBERTa implementations
-├── evaluation.py           # Comprehensive evaluation and reporting
-├── main.py                 # Main experiment runner
-├── demo.py                 # Quick demonstration script
-├── requirements.txt        # Project dependencies
-└── README.md              # This file
+├── models/
+├── plots/
+├── results/
+├── config.py
+├── data_utils.py
+├── baseline_models.py
+├── transformer_models.py
+├── evaluation.py
+├── main.py
+├── requirements.txt
+└── README.md
 ```
 
-## Models Implemented
+## Models
 
-### Baseline Models
-1. **Logistic Regression** - Traditional linear classifier with TF-IDF features
-2. **Random Forest** - Ensemble method with TF-IDF features
+*   **Baseline:** Logistic Regression & Random Forest with TF-IDF features.
+*   **Transformers:** Fine-tuned BERT, RoBERTa, and other variants.
 
-### Transformer Models
-1. **BERT** (`bert-base-uncased`) - Bidirectional encoder representations
-2. **RoBERTa** (`roberta-base`) - Optimized BERT variant
+All models are set up for multi-label classification.
 
-All models use One-vs-Rest strategy for multi-label classification.
+## How to Run
+
+### 1. Setup
+
+First, make sure you have Python 3.9+ and then install the dependencies.
+
+```bash
+# It's a good idea to use a virtual environment
+python -m venv venv
+source venv/bin/activate
+
+# Install required packages
+pip install -r requirements.txt
+```
+
+### 2. Get the Data
+
+Download the dataset from the [Kaggle page](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge/data) and put `train.csv`, `test.csv`, and `test_labels.csv` into the `data/raw/` directory.
+
+### 3. Run Experiments
+
+You can run everything with a single command:
+
+```bash
+python main.py --all
+```
+
+Or run specific parts:
+
+```bash
+# Just run the baseline models
+python main.py --baseline
+
+# Just run the transformer models
+python main.py --transformers
+
+# Just generate the final plots and summary CSVs
+python main.py --report-only
+```
+
+## Configuration
+
+You can change model hyperparameters, like learning rate and batch size, in `config.py`.
+
+```python
+MODELS_CONFIG = {
+    'bert': {
+        'model_name': 'bert-base-uncased',
+        'batch_size': 32,
+        'learning_rate': 2e-5,
+        'epochs': 3,
+    },
+    # ... other models
+}
+```
+
+## Results
+
+After running, you can find the outputs here:
+
+*   `results/`: All the raw numbers, including performance summaries and per-class metrics.
+*   `plots/`: Visuals comparing the model performances.
+*   `models/`: Saved model files for later use.
+
+## Common Issues
+
+*   **CUDA Out of Memory:** If you get this error while training transformers, try reducing the `batch_size` for that model in `config.py`.
+*   **Dataset Not Found:** Make sure the CSV files from Kaggle are in the `data/raw/` folder.
 
 ## Features
 

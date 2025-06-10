@@ -16,7 +16,7 @@ warnings.filterwarnings('ignore')
 from config import *
 
 class ToxicCommentDataset(Dataset):
-    """Dataset class for toxic comment classification"""
+    """PyTorch dataset for toxic comments"""
     
     def __init__(self, texts: List[str], labels: np.ndarray, tokenizer, max_length: int = 512):
         self.texts = texts
@@ -30,7 +30,6 @@ class ToxicCommentDataset(Dataset):
     def __getitem__(self, idx):
         text = str(self.texts[idx])
         
-        # Tokenize text
         encoding = self.tokenizer(
             text,
             truncation=True,
@@ -46,7 +45,7 @@ class ToxicCommentDataset(Dataset):
         }
 
 def load_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Load train, test data and test labels"""
+    """Load train/test data from CSVs"""
     print("Loading data...")
     
     train_df = pd.read_csv(TRAIN_FILE)
@@ -60,23 +59,14 @@ def load_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     return train_df, test_df, test_labels_df
 
 def clean_text(text: str) -> str:
-    """Clean and preprocess text"""
+    """Basic text cleaning"""
     if pd.isna(text):
         return ""
     
-    # Convert to lowercase
     text = text.lower()
-    
-    # Remove extra whitespace
     text = ' '.join(text.split())
-    
-    # Remove URLs
     text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
-    
-    # Remove user mentions and hashtags (for social media text)
     text = re.sub(r'@\w+|#\w+', '', text)
-    
-    # Remove excessive punctuation
     text = re.sub(r'[!]{2,}', '!', text)
     text = re.sub(r'[?]{2,}', '?', text)
     text = re.sub(r'[.]{2,}', '.', text)
@@ -84,45 +74,32 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 def preprocess_data(train_df: pd.DataFrame, test_df: pd.DataFrame, test_labels_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Preprocess the datasets"""
+    """Apply cleaning and merge test labels"""
     print("Preprocessing data...")
     
-    # Clean text
     train_df['comment_text_clean'] = train_df['comment_text'].apply(clean_text)
     test_df['comment_text_clean'] = test_df['comment_text'].apply(clean_text)
     
-    # Check if test_df already has labels (some datasets come pre-labeled)
-    if all(col in test_df.columns for col in TARGET_COLUMNS):
-        print("Test data already contains labels, using them directly.")
-        # Remove samples with missing values if any
-        mask = test_df[TARGET_COLUMNS].notna().all(axis=1)
-        test_df = test_df[mask].reset_index(drop=True)
-    else:
-        # Merge test data with labels from separate file
-        print("Merging test data with labels from test_labels.csv")
-        test_df = test_df.merge(test_labels_df, on='id', how='left')
-        
-        # Remove test samples with -1 labels (these are not labeled)
-        mask = (test_df[TARGET_COLUMNS] != -1).all(axis=1)
-        test_df = test_df[mask].reset_index(drop=True)
+    # Merge test data with labels, removing samples with -1 labels (unlabeled)
+    test_df = test_df.merge(test_labels_df, on='id', how='left')
+    mask = (test_df[TARGET_COLUMNS] != -1).all(axis=1)
+    test_df = test_df[mask].reset_index(drop=True)
     
     print(f"After preprocessing - Train: {train_df.shape}, Test: {test_df.shape}")
     
     return train_df, test_df
 
 def analyze_data(train_df: pd.DataFrame, save_plots: bool = True):
-    """Analyze and visualize the dataset"""
+    """Create and save plots for dataset analysis"""
     print("Analyzing dataset...")
     
-    # Set plotting style
     plt.style.use('default')
     sns.set_palette("husl")
     
-    # Create subplots
     fig, axes = plt.subplots(2, 2, figsize=(15, 12))
     fig.suptitle('Toxic Comment Dataset Analysis', fontsize=16, fontweight='bold')
     
-    # 1. Label distribution
+    # Label distribution
     label_counts = train_df[TARGET_COLUMNS].sum().sort_values(ascending=False)
     axes[0, 0].bar(range(len(label_counts)), label_counts.values)
     axes[0, 0].set_xticks(range(len(label_counts)))
@@ -130,11 +107,10 @@ def analyze_data(train_df: pd.DataFrame, save_plots: bool = True):
     axes[0, 0].set_title('Distribution of Toxicity Labels')
     axes[0, 0].set_ylabel('Count')
     
-    # Add value labels on bars
     for i, v in enumerate(label_counts.values):
         axes[0, 0].text(i, v + 500, str(v), ha='center', va='bottom')
     
-    # 2. Comment length distribution
+    # Comment length distribution
     train_df['comment_length'] = train_df['comment_text_clean'].str.len()
     axes[0, 1].hist(train_df['comment_length'], bins=50, alpha=0.7, edgecolor='black')
     axes[0, 1].set_title('Distribution of Comment Lengths')
@@ -144,13 +120,13 @@ def analyze_data(train_df: pd.DataFrame, save_plots: bool = True):
                       label=f'Mean: {train_df["comment_length"].mean():.0f}')
     axes[0, 1].legend()
     
-    # 3. Correlation matrix of labels
+    # Correlation matrix of labels
     corr_matrix = train_df[TARGET_COLUMNS].corr()
     sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0, 
                 square=True, ax=axes[1, 0])
     axes[1, 0].set_title('Correlation Matrix of Toxicity Labels')
     
-    # 4. Multi-label statistics
+    # Multi-label statistics
     train_df['total_labels'] = train_df[TARGET_COLUMNS].sum(axis=1)
     label_dist = train_df['total_labels'].value_counts().sort_index()
     axes[1, 1].bar(label_dist.index, label_dist.values)
@@ -158,7 +134,6 @@ def analyze_data(train_df: pd.DataFrame, save_plots: bool = True):
     axes[1, 1].set_xlabel('Number of Labels')
     axes[1, 1].set_ylabel('Count')
     
-    # Add percentage labels
     total_comments = len(train_df)
     for i, v in enumerate(label_dist.values):
         percent = (v / total_comments) * 100
@@ -173,15 +148,12 @@ def analyze_data(train_df: pd.DataFrame, save_plots: bool = True):
     
     plt.show()
     
-    # Print summary statistics
-    print("\n=== Dataset Summary ===")
+    print("\n--- Dataset Summary ---")
     print(f"Total training samples: {len(train_df):,}")
-    print(f"Average comment length: {train_df['comment_length'].mean():.1f} characters")
-    print(f"Median comment length: {train_df['comment_length'].median():.1f} characters")
-    print(f"Percentage of toxic comments: {(train_df['toxic'].sum() / len(train_df) * 100):.2f}%")
-    print(f"Percentage of clean comments: {((train_df[TARGET_COLUMNS].sum(axis=1) == 0).sum() / len(train_df) * 100):.2f}%")
+    print(f"Avg comment length: {train_df['comment_length'].mean():.1f} chars")
+    print(f"Clean comments: {((train_df[TARGET_COLUMNS].sum(axis=1) == 0).sum() / len(train_df) * 100):.2f}%")
     
-    print("\n=== Label Statistics ===")
+    print("\n--- Label Stats ---")
     for col in TARGET_COLUMNS:
         count = train_df[col].sum()
         percentage = (count / len(train_df)) * 100
@@ -189,15 +161,14 @@ def analyze_data(train_df: pd.DataFrame, save_plots: bool = True):
 
 def create_data_splits(train_df: pd.DataFrame, test_df: pd.DataFrame, 
                       test_size: float = 0.2, random_state: int = 42) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Create train/validation/test splits"""
+    """Create train/validation/test splits, stratifying on the 'toxic' label"""
     print("Creating data splits...")
     
-    # Split training data into train and validation
     train_split, val_split = train_test_split(
         train_df, 
         test_size=test_size, 
         random_state=random_state,
-        stratify=train_df['toxic']  # Stratify by main toxic label
+        stratify=train_df['toxic']
     )
     
     print(f"Train split: {len(train_split):,} samples")
@@ -209,9 +180,8 @@ def create_data_splits(train_df: pd.DataFrame, test_df: pd.DataFrame,
 def create_baseline_features(train_df: pd.DataFrame, val_df: pd.DataFrame, 
                            test_df: pd.DataFrame, max_features: int = 10000) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Create TF-IDF features for baseline models"""
-    print("Creating TF-IDF features for baseline...")
+    print("Creating TF-IDF features...")
     
-    # Initialize TF-IDF vectorizer
     tfidf = TfidfVectorizer(
         max_features=max_features,
         ngram_range=(1, 2),
@@ -220,7 +190,6 @@ def create_baseline_features(train_df: pd.DataFrame, val_df: pd.DataFrame,
         max_df=0.9
     )
     
-    # Fit on training data and transform all splits
     X_train = tfidf.fit_transform(train_df['comment_text_clean'])
     X_val = tfidf.transform(val_df['comment_text_clean'])
     X_test = tfidf.transform(test_df['comment_text_clean'])
@@ -231,10 +200,9 @@ def create_baseline_features(train_df: pd.DataFrame, val_df: pd.DataFrame,
 
 def create_dataloaders(train_df: pd.DataFrame, val_df: pd.DataFrame, test_df: pd.DataFrame,
                       tokenizer, batch_size: int = 16, max_length: int = 512) -> Tuple[DataLoader, DataLoader, DataLoader]:
-    """Create PyTorch DataLoaders for transformer models"""
+    """Create PyTorch DataLoaders for transformers"""
     print("Creating DataLoaders...")
     
-    # Create datasets
     train_dataset = ToxicCommentDataset(
         train_df['comment_text_clean'].tolist(),
         train_df[TARGET_COLUMNS].values,
@@ -256,13 +224,9 @@ def create_dataloaders(train_df: pd.DataFrame, val_df: pd.DataFrame, test_df: pd
         max_length
     )
     
-    # Create data loaders
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-    
-    print(f"Created DataLoaders - Train: {len(train_loader)} batches, "
-          f"Val: {len(val_loader)} batches, Test: {len(test_loader)} batches")
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
     
     return train_loader, val_loader, test_loader
 

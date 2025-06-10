@@ -2,7 +2,7 @@ import os
 import torch
 from pathlib import Path
 
-# Project paths
+# --- Project Paths ---
 PROJECT_ROOT = Path(__file__).parent
 DATA_DIR = PROJECT_ROOT / "data"
 RAW_DATA_DIR = DATA_DIR / "raw"
@@ -11,22 +11,22 @@ RESULTS_DIR = PROJECT_ROOT / "results"
 PLOTS_DIR = PROJECT_ROOT / "plots"
 MODELS_DIR = PROJECT_ROOT / "models"
 
-# Create directories if they don't exist
+# Make sure dirs exist
 for dir_path in [PROCESSED_DATA_DIR, RESULTS_DIR, PLOTS_DIR, MODELS_DIR]:
     dir_path.mkdir(parents=True, exist_ok=True)
 
-# Dataset configuration
+# --- Dataset Config ---
 TRAIN_FILE = RAW_DATA_DIR / "train.csv"
 TEST_FILE = RAW_DATA_DIR / "test.csv"
 TEST_LABELS_FILE = RAW_DATA_DIR / "test_labels.csv"
 
-# Target columns for multi-label classification
+# Classification targets
 TARGET_COLUMNS = [
     'toxic', 'severe_toxic', 'obscene', 
     'threat', 'insult', 'identity_hate'
 ]
 
-# Model configurations
+# --- Model Hyperparameters ---
 MODELS_CONFIG = {
     'bert': {
         'model_name': 'bert-base-uncased',
@@ -85,20 +85,14 @@ MODELS_CONFIG = {
     }
 }
 
-# Training configuration
+# --- Training Settings ---
 RANDOM_SEED = 42
 VALIDATION_SPLIT = 0.2
 TEST_SIZE = 0.2
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-
-# Memory optimization for larger batch sizes
 GRADIENT_ACCUMULATION_STEPS = 1
-MAX_GRAD_NORM = 1.0  # Gradient clipping
+MAX_GRAD_NORM = 1.0
 
-# Evaluation metrics
-METRICS = ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']
-
-# Visualization settings
+# --- Plotting ---
 PLOT_STYLE = 'seaborn-v0_8'
-FIGURE_SIZE = (12, 8)
 DPI = 300 
