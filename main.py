@@ -60,7 +60,7 @@ def main():
             print("--- Generating Final Report ---")
             generate_comprehensive_report()
             return
-
+        
         all_results = {}
         if args.baseline or args.all:
             print("--- Running Baseline Experiments ---")
@@ -78,7 +78,7 @@ def main():
         if all_results:
             print("\n--- Generating Final Report ---")
             generate_comprehensive_report()
-
+    
     except KeyboardInterrupt:
         print("\n\nExperiment interrupted by user.")
     except Exception as e:

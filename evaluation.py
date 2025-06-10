@@ -29,7 +29,7 @@ def load_all_results():
         for file in glob.glob(str(RESULTS_DIR / pattern)):
             model_name = Path(file).stem.replace('_metrics', '').replace('_test', '')
             results['transformers'][model_name] = pd.read_csv(file).iloc[0].to_dict()
-            
+    
     return results
 
 def create_performance_comparison(results, save_plot=True):
@@ -46,7 +46,7 @@ def create_performance_comparison(results, save_plot=True):
     
     if not all_models:
         return
-
+    
     fig, axes = plt.subplots(2, 2, figsize=(18, 14))
     fig.suptitle('Comprehensive Model Performance Comparison', fontsize=16)
     
@@ -100,7 +100,7 @@ def create_performance_table(results):
                 if isinstance(val, float):
                     row[key.replace('_', ' ').title()] = f"{val:.4f}"
             table_data.append(row)
-
+    
     df = pd.DataFrame(table_data)
     df = df.sort_values('F1 Micro', ascending=False)
     df.to_csv(RESULTS_DIR / 'performance_summary.csv', index=False)
@@ -273,7 +273,7 @@ def generate_comprehensive_report():
     if not results['baseline'] and not results['transformers']:
         print("No results found. Exiting.")
         return
-        
+    
     print(f"Found results for {len(results.get('baseline', {}))} baseline models and {len(results.get('transformers', {}))} transformer models.")
     
     create_performance_table(results)

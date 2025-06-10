@@ -168,7 +168,7 @@ class TransformerTrainer:
         
         if self.best_model_state:
             self.model.load_state_dict(self.best_model_state)
-
+        
     def plot_training_history(self, model_name):
         """Plot training and validation loss and F1 score."""
         fig, ax1 = plt.subplots(figsize=(12, 5))
@@ -200,7 +200,7 @@ def train_and_evaluate_model(model_key):
     train_df, test_df, test_labels_df = load_data()
     train_df, test_df = preprocess_data(train_df, test_df, test_labels_df)
     train_split, val_split, test_split = create_data_splits(train_df, test_df)
-
+    
     train_loader, val_loader, test_loader = create_dataloaders(
         train_split, val_split, test_split, tokenizer, 
         batch_size=config['batch_size'], max_length=config['max_length']
@@ -227,7 +227,7 @@ def train_and_evaluate_model(model_key):
         torch.save(trainer.model.state_dict(), MODELS_DIR / f'{model_name.replace("/", "_")}.pt')
         
         return {'test_metrics': test_metrics, 'history': trainer.history}
-
+    
     except Exception as e:
         print(f"❌ Error training {model_name}: {e}")
         return None
